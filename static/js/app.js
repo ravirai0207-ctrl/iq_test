@@ -1,7 +1,10 @@
 /**
- * Luminary NeuroIQ Client Controller v2.5
- * Takes 100% of questions from public online question servers (Open Trivia Database API / The Trivia API),
- * with direct instant registration (NO OTP), 3D reactive light background, and SQLite persistence.
+ * Luminary NeuroIQ Client Controller v3.0 (GitHub Pages & Cloud Ready)
+ * 100% Client-Side + Server Hybrid Engine:
+ * - Direct registration (NO OTP)
+ * - Questions sourced live from Global Question Servers (Open Trivia Database)
+ * - Autonomous client-side scoring for GitHub Pages static hosting
+ * - Dynamic 3D Three.js light background
  */
 
 (function () {
@@ -16,9 +19,9 @@
     },
     questions: [],
     currentIndex: 0,
-    answers: {},        // { [questionId]: selectedOptionIndex }
+    answers: {},
     flagged: new Set(),
-    timerSeconds: 900,  // 15 minutes
+    timerSeconds: 900,
     elapsedSeconds: 0,
     timerInterval: null,
     scene: null
@@ -66,7 +69,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // Navigation & Sound Controls
+  // Navigation & Audio
   // --------------------------------------------------------------------------
   function setupNavigation() {
     const brandBtn = document.getElementById('brand-home-btn');
@@ -104,12 +107,12 @@
   }
 
   // --------------------------------------------------------------------------
-  // Sourcing 100% of Questions from Online Question Servers
+  // Online Question Server Sourcing (Open Trivia DB & The Trivia API)
   // --------------------------------------------------------------------------
   async function fetchAllQuestionsFromServer(count = 12) {
     let serverQuestions = [];
 
-    // Primary Online Server: Open Trivia Database API (tens of thousands of questions)
+    // Primary: Open Trivia Database API
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4500);
@@ -123,15 +126,15 @@
         const data = await res.json();
         if (data.results && data.results.length >= 5) {
           serverQuestions = data.results.map((item, idx) => formatServerQuestion(item, idx + 1));
-          console.log(`[Question Server] Successfully loaded ${serverQuestions.length} questions from OpenTDB.`);
+          console.log(`[Question Server] Loaded ${serverQuestions.length} items from OpenTDB.`);
           return serverQuestions;
         }
       }
     } catch (e) {
-      console.warn('[Question Server] OpenTDB unavailable or timed out, trying secondary question server...', e);
+      console.warn('[Question Server] OpenTDB unavailable, querying secondary server...', e);
     }
 
-    // Secondary Online Server: The Trivia API
+    // Secondary: The Trivia API
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4500);
@@ -150,15 +153,15 @@
             const wrongs = item.incorrectAnswers || [];
             return formatQuestionDirect(prompt, correct, wrongs, item.category || 'General Science & Logic', idx + 1, item.difficulty || 'medium');
           });
-          console.log(`[Question Server] Successfully loaded ${serverQuestions.length} questions from The Trivia API.`);
+          console.log(`[Question Server] Loaded ${serverQuestions.length} items from The Trivia API.`);
           return serverQuestions;
         }
       }
     } catch (e) {
-      console.warn('[Question Server] Secondary question server unavailable:', e);
+      console.warn('[Question Server] Secondary server unavailable:', e);
     }
 
-    return null; // Local fallback
+    return null;
   }
 
   function formatServerQuestion(item, id) {
@@ -191,28 +194,23 @@
       catIcon = '⚖️';
     }
 
-    // Shuffle options
     const allOptions = [correct, ...wrongs].sort(() => Math.random() - 0.5);
     const correctIdx = allOptions.indexOf(correct);
 
     const diffLabel = (difficulty || 'standard').toUpperCase();
     const cleanCat = escapeSvg(rawCategory.slice(0, 18));
 
-    // Futuristic SVG telemetry question badge
     const svg = `
       <svg width="100%" height="150" viewBox="0 0 420 130" preserveAspectRatio="xMidYMid meet" class="q-svg">
         <rect x="15" y="15" width="390" height="100" rx="14" fill="#f8fafc" stroke="#6366f1" stroke-width="1.8"/>
         
-        <!-- Category & Icon Badge -->
         <rect x="32" y="28" width="145" height="26" rx="13" fill="#e0e7ff"/>
         <text x="45" y="46" font-size="13">${catIcon}</text>
         <text x="65" y="45" font-size="11" font-weight="bold" fill="#4338ca">${cleanCat}</text>
 
-        <!-- Live Server Verification Stamp -->
         <rect x="245" y="28" width="145" height="26" rx="13" fill="#dcfce7"/>
         <text x="256" y="45" font-size="10.5" font-weight="bold" fill="#15803d">🌐 Live Server Question</text>
 
-        <!-- Telemetry waveform line -->
         <path d="M 35 88 Q 75 68, 115 88 T 195 88 T 275 88 T 385 88" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3"/>
         <circle cx="35" cy="88" r="3.5" fill="#4f46e5"/>
         <circle cx="195" cy="88" r="3.5" fill="#06b6d4"/>
@@ -252,8 +250,27 @@
     }[s]));
   }
 
+  // Fallback questions for offline environment
+  function getStaticFallbackQuestions(count = 12) {
+    const bank = [
+      formatQuestionDirect("Which number logically continues the series: 3, 7, 15, 31, 63, ?", "127", ["120", "125", "131"], "Numerical Logic", 1),
+      formatQuestionDirect("In binary computing, how many distinct values can be represented by 8 bits (1 byte)?", "256", ["128", "512", "1024"], "Computational Logic", 2),
+      formatQuestionDirect("If all Bloops are Razzies and all Razzies are Lizzies, are all Bloops definitely Lizzies?", "Yes, absolutely", ["No, never", "Only sometimes", "Cannot be determined"], "Deductive Reasoning", 3),
+      formatQuestionDirect("What is the next prime number following 29?", "31", ["33", "37", "39"], "Mathematical Logic", 4),
+      formatQuestionDirect("Which fundamental particle has a positive elementary charge?", "Proton", ["Neutron", "Electron", "Neutrino"], "Physics & Nature", 5),
+      formatQuestionDirect("In 3D Euclidean geometry, how many faces does a regular icosahedron have?", "20 faces", ["12 faces", "8 faces", "24 faces"], "Spatial Mechanics", 6),
+      formatQuestionDirect("Which algorithm paradigm does Dijkstra's shortest path algorithm utilize?", "Greedy algorithm", ["Divide and conquer", "Backtracking", "Linear search"], "Computational Logic", 7),
+      formatQuestionDirect("If a clock shows 3:15, what is the acute angle between the hour and minute hands?", "7.5 degrees", ["0 degrees", "15 degrees", "5 degrees"], "Spatial Mechanics", 8),
+      formatQuestionDirect("Which element has the chemical atomic symbol 'Fe'?", "Iron", ["Fluorine", "Francium", "Fermium"], "Science & Chemistry", 9),
+      formatQuestionDirect("Which sequence rule applies to: 2, 3, 5, 8, 13, 21, ?", "34 (Fibonacci series)", ["32", "29", "35"], "Numerical Logic", 10),
+      formatQuestionDirect("What is the decimal equivalent of the binary number 1011?", "11", ["9", "13", "15"], "Computational Logic", 11),
+      formatQuestionDirect("Which logical gate yields TRUE if and only if both inputs are distinct (exclusive)?", "XOR gate", ["AND gate", "NOR gate", "XNOR gate"], "Computational Logic", 12)
+    ];
+    return bank.slice(0, count);
+  }
+
   // --------------------------------------------------------------------------
-  // Direct Registration (NO OTP!)
+  // Direct Registration (NO OTP!) — Hybrid Online/Offline
   // --------------------------------------------------------------------------
   function setupDirectRegistration() {
     const form = document.getElementById('form-register');
@@ -285,44 +302,44 @@
       startBtn.innerHTML = '<span>Querying Question Server...</span><span>🌐</span>';
 
       try {
-        // Fetch 100% of questions from public online question server
         const onlineQuestions = await fetchAllQuestionsFromServer(12);
+        const questionsToUse = (onlineQuestions && onlineQuestions.length >= 5) ? onlineQuestions : getStaticFallbackQuestions(12);
 
         startBtn.innerHTML = '<span>Initializing 3D Session...</span><span>⏳</span>';
 
-        const payload = {
-          name,
-          age,
-          email
-        };
-        if (onlineQuestions && onlineQuestions.length >= 5) {
-          payload.server_questions = onlineQuestions;
+        // Try registering with backend if available
+        try {
+          const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, age, email, server_questions: questionsToUse })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              state.user.sessionToken = data.session_token;
+              state.questions = questionsToUse || data.questions || [];
+            }
+          }
+        } catch (apiErr) {
+          // GitHub Pages static mode
         }
 
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          state.user.sessionToken = data.session_token;
-          // Use the exact server questions
-          state.questions = onlineQuestions && onlineQuestions.length >= 5 ? onlineQuestions : (data.questions || []);
-
-          document.getElementById('candidate-welcome-name').textContent = name;
-          document.getElementById('brief-user-age').textContent = age;
-
-          window.soundEngine.playSuccess();
-          if (state.scene) state.scene.pulse();
-
-          switchView('instructions');
-        } else {
-          alert('Registration error: ' + (data.error || 'Failed to start session.'));
+        // Standalone fallback session for GitHub Pages
+        if (!state.user.sessionToken) {
+          state.user.sessionToken = 'gh_sess_' + Math.random().toString(36).substring(2);
+          state.questions = questionsToUse;
         }
+
+        document.getElementById('candidate-welcome-name').textContent = name;
+        document.getElementById('brief-user-age').textContent = age;
+
+        window.soundEngine.playSuccess();
+        if (state.scene) state.scene.pulse();
+
+        switchView('instructions');
       } catch (err) {
-        alert('Server communication error: ' + err.message);
+        alert('Session setup error: ' + err.message);
       } finally {
         startBtn.disabled = false;
         startBtn.innerHTML = '<span>Initialize 3D Assessment</span><span>→</span>';
@@ -447,15 +464,12 @@
 
       if (state.timerSeconds <= 0) {
         clearInterval(state.timerInterval);
-        alert('Test duration completed! Finalizing evaluation.');
+        alert('Test duration reached! Finalizing cognitive evaluation.');
         submitTest();
       }
     }, 1000);
   }
 
-  // --------------------------------------------------------------------------
-  // Question Rendering
-  // --------------------------------------------------------------------------
   function renderCurrentQuestion() {
     const q = state.questions[state.currentIndex];
     if (!q) return;
@@ -476,7 +490,6 @@
     document.getElementById('test-q-title').textContent = q.title;
     document.getElementById('test-q-prompt').textContent = q.prompt;
 
-    // Visual Diagram Display
     const visualContainer = document.getElementById('test-visual-container');
     visualContainer.innerHTML = '';
     if (q.visual_data && q.visual_data.trim()) {
@@ -486,7 +499,6 @@
       visualContainer.style.display = 'none';
     }
 
-    // 4 Options Grid
     const optionsGrid = document.getElementById('test-options-grid');
     optionsGrid.innerHTML = '';
     const keys = ['1', '2', '3', '4'];
@@ -570,7 +582,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // Submitting Test
+  // Submitting Test & Hybrid Evaluation Engine
   // --------------------------------------------------------------------------
   function confirmAndSubmitTest() {
     const answeredCount = Object.keys(state.answers).length;
@@ -594,9 +606,9 @@
     const statusEl = document.getElementById('calc-status-text');
     const steps = [
       'Normalizing age-calibrated Gaussian vectors...',
-      'Quantifying response latencies and precision...',
-      'Synthesizing standardized fluid quotient metrics...',
-      'Generating verifiable certificate hash...'
+      'Quantifying response accuracy and velocity...',
+      'Synthesizing standardized psychometric profile...',
+      'Generating verifiable credential signature...'
     ];
 
     let stepIdx = 0;
@@ -607,13 +619,19 @@
       }
     }, 550);
 
-    try {
-      const payload = {
-        session_token: state.user.sessionToken,
-        answers: state.answers,
-        time_taken_seconds: state.elapsedSeconds
-      };
+    const payload = {
+      session_token: state.user.sessionToken,
+      name: state.user.name,
+      age: state.user.age,
+      answers: state.answers,
+      time_taken_seconds: state.elapsedSeconds,
+      questions: state.questions
+    };
 
+    let result = null;
+
+    // 1. Try server evaluation
+    try {
       const res = await fetch('/api/submit-test', {
         method: 'POST',
         headers: {
@@ -622,26 +640,140 @@
         },
         body: JSON.stringify(payload)
       });
-      const data = await res.json();
-
-      clearInterval(stepInterval);
-
-      if (data.success && data.result) {
-        setTimeout(() => {
-          renderResults(data.result);
-          switchView('results');
-          if (state.scene) state.scene.celebrate();
-          window.soundEngine.playSuccess();
-        }, 1100);
-      } else {
-        alert('Evaluation error: ' + (data.error || 'Failed to score test.'));
-        switchView('test');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.result) {
+          result = data.result;
+        }
       }
-    } catch (err) {
-      clearInterval(stepInterval);
-      alert('Network error submitting test: ' + err.message);
-      switchView('test');
+    } catch (e) {
+      console.log('[App] Static evaluation mode active');
     }
+
+    // 2. Client-side evaluation fallback (for GitHub Pages static hosting)
+    if (!result) {
+      result = evaluateClientSideIQ(state.user.age, state.questions, state.answers, state.elapsedSeconds);
+    }
+
+    clearInterval(stepInterval);
+
+    setTimeout(() => {
+      renderResults(result);
+      switchView('results');
+      if (state.scene) state.scene.celebrate();
+      window.soundEngine.playSuccess();
+    }, 1100);
+  }
+
+  // Client-Side Psychometric Scoring Engine (Exact replica of backend for GitHub Pages)
+  function evaluateClientSideIQ(userAge, questions, answers, timeTaken) {
+    const total = questions.length;
+    let correct = 0;
+    const catTotals = {};
+    const catCorrect = {};
+
+    questions.forEach(q => {
+      const qid = String(q.id);
+      const cat = q.category_key || 'logic';
+      catTotals[cat] = (catTotals[cat] || 0) + 1;
+
+      const userChoice = answers[qid];
+      const isCorrect = (userChoice !== undefined && parseInt(userChoice) === q.correct_index);
+      if (isCorrect) {
+        correct++;
+        catCorrect[cat] = (catCorrect[cat] || 0) + 1;
+      }
+    });
+
+    let ageBonus = 0;
+    if (userAge < 16) ageBonus = 3.5;
+    else if (userAge <= 21) ageBonus = 1.0;
+    else if (userAge <= 35) ageBonus = 0.0;
+    else if (userAge <= 50) ageBonus = 2.0;
+    else ageBonus = 4.0;
+
+    let speedBonus = 0;
+    if (correct / total >= 0.5) {
+      if (timeTaken < 350) speedBonus = 3.0;
+      else if (timeTaken < 550) speedBonus = 1.5;
+    }
+
+    const baselineMid = total * 0.5;
+    const spread = Math.max(1.5, total * 0.18);
+    const zScore = (correct - baselineMid) / spread;
+    const rawIQ = 100 + (zScore * 15) + ageBonus + speedBonus;
+    const iqScore = Math.round(Math.max(68, Math.min(160, rawIQ)));
+
+    // Error function approximation for Gaussian percentile
+    const z = (iqScore - 100) / 15;
+    const t = 1.0 / (1.0 + 0.5 * Math.abs(z / Math.SQRT2));
+    const tau = t * Math.exp(-Math.pow(z / Math.SQRT2, 2) - 1.26551223 + 1.00002368*t + 0.37409196*t*t + 0.09678418*Math.pow(t, 3) - 0.18628806*Math.pow(t, 4) + 0.27886807*Math.pow(t, 5) - 1.13520398*Math.pow(t, 6) + 1.48851587*Math.pow(t, 7) - 0.82215223*Math.pow(t, 8) + 0.17087277*Math.pow(t, 9));
+    const erf = (z >= 0) ? (1 - tau) : (tau - 1);
+    const percentile = Math.round(Math.max(0.1, Math.min(99.9, 0.5 * (1 + erf) * 100)) * 10) / 10;
+
+    let classification = "Average Intelligence";
+    let badge = "Tier 5: Normal Distribution";
+    let desc = "Solid standard cognitive ability aligning with standard global benchmarks.";
+
+    if (iqScore >= 145) {
+      classification = "Genius / Highly Gifted";
+      badge = "Tier 1: Exceptional";
+      desc = "In the top 0.1% globally. Demonstrates elite abstract reasoning, fluid speed, and synthesis.";
+    } else if (iqScore >= 130) {
+      classification = "Very Superior Intelligence";
+      badge = "Tier 2: Very Superior";
+      desc = "Mensa-level cognitive aptitude. Exceptional multi-dimensional pattern logic and deductive agility.";
+    } else if (iqScore >= 120) {
+      classification = "Superior Intelligence";
+      badge = "Tier 3: Superior";
+      desc = "Substantially above standard population average across all evaluated dimensions.";
+    } else if (iqScore >= 110) {
+      classification = "High Average";
+      badge = "Tier 4: High Average";
+      desc = "Above average fluid reasoning and sequence extrapolation competence.";
+    }
+
+    const catScores = {};
+    Object.keys(catTotals).forEach(cat => {
+      const c = catCorrect[cat] || 0;
+      const tot = catTotals[cat];
+      catScores[cat] = {
+        correct: c,
+        total: tot,
+        percentage: Math.round((c / tot) * 100)
+      };
+    });
+
+    const certId = "CERT-IQ-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+
+    const resObj = {
+      iq_score: iqScore,
+      percentile: percentile,
+      classification: classification,
+      badge: badge,
+      description: desc,
+      correct_answers: correct,
+      total_questions: total,
+      time_taken_seconds: timeTaken,
+      category_scores: catScores,
+      certificate_id: certId
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('neuro_iq_leaderboard') || '[]');
+      existing.push({
+        name: state.user.name,
+        age: state.user.age,
+        iq_score: iqScore,
+        percentile: percentile,
+        classification: classification,
+        time_taken_seconds: timeTaken
+      });
+      existing.sort((a, b) => b.iq_score - a.iq_score);
+      localStorage.setItem('neuro_iq_leaderboard', JSON.stringify(existing.slice(0, 10)));
+    } catch(e) {}
+
+    return resObj;
   }
 
   // --------------------------------------------------------------------------
@@ -658,7 +790,6 @@
 
     drawGaussianBellCurve(result.iq_score);
 
-    // Category Metrics
     const catContainer = document.getElementById('category-scores-container');
     catContainer.innerHTML = '';
 
@@ -693,7 +824,6 @@
       }, 150);
     });
 
-    // Populate Certificate
     document.getElementById('cert-user-name').textContent = state.user.name;
     document.getElementById('cert-user-email').textContent = state.user.email;
     document.getElementById('cert-user-age').textContent = `Age ${state.user.age}`;
@@ -827,7 +957,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // Modals & Action Listeners
+  // Modals & Storage
   // --------------------------------------------------------------------------
   function setupModals() {
     const openLeaderboardBtn = document.getElementById('open-leaderboard-btn');
@@ -885,50 +1015,60 @@
 
   async function loadLeaderboard() {
     const tbody = document.getElementById('leaderboard-tbody');
+    let leaders = [];
+
     try {
       const res = await fetch('/api/leaderboard');
-      const data = await res.json();
-      if (data.success && data.leaderboard) {
-        if (data.leaderboard.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">No tests submitted yet.</td></tr>';
-          return;
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.leaderboard) {
+          leaders = data.leaderboard;
         }
-
-        tbody.innerHTML = data.leaderboard.map((row, idx) => `
-          <tr>
-            <td style="font-weight: 800; color: ${idx === 0 ? '#d97706' : (idx === 1 ? '#64748b' : (idx === 2 ? '#b45309' : 'var(--text-secondary)'))};">
-              #${idx + 1}
-            </td>
-            <td style="font-weight: 600;">${escapeHtml(row.name)}</td>
-            <td>${row.age}</td>
-            <td style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-indigo);">${row.iq_score}</td>
-            <td>${row.percentile}%</td>
-            <td><span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">${escapeHtml(row.classification)}</span></td>
-            <td>${row.time_taken_seconds}s</td>
-          </tr>
-        `).join('');
       }
-    } catch (e) {
-      tbody.innerHTML = '<tr><td colspan="7" style="color: red; text-align: center;">Failed to load leaderboard.</td></tr>';
+    } catch (e) {}
+
+    // Fallback to local storage for GitHub Pages
+    if (leaders.length === 0) {
+      try {
+        leaders = JSON.parse(localStorage.getItem('neuro_iq_leaderboard') || '[]');
+      } catch (e) {}
     }
+
+    if (leaders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 18px;">No tests recorded yet. Be the first!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = leaders.map((row, idx) => `
+      <tr>
+        <td style="font-weight: 800; color: ${idx === 0 ? '#d97706' : (idx === 1 ? '#64748b' : (idx === 2 ? '#b45309' : 'var(--text-secondary)'))};">
+          #${idx + 1}
+        </td>
+        <td style="font-weight: 600;">${escapeHtml(row.name)}</td>
+        <td>${row.age}</td>
+        <td style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-indigo);">${row.iq_score}</td>
+        <td>${row.percentile}%</td>
+        <td><span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">${escapeHtml(row.classification)}</span></td>
+        <td>${row.time_taken_seconds}s</td>
+      </tr>
+    `).join('');
   }
 
   async function loadAdminRecords() {
     const usersTbody = document.getElementById('admin-users-tbody');
     const resultsTbody = document.getElementById('admin-results-tbody');
+    let loaded = false;
 
     try {
       const res = await fetch('/api/admin/records');
-      const data = await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          loaded = true;
+          const users = data.data.users || [];
+          const results = data.data.test_results || [];
 
-      if (data.success && data.data) {
-        const users = data.data.users || [];
-        const results = data.data.test_results || [];
-
-        if (users.length === 0) {
-          usersTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No registered candidates yet.</td></tr>';
-        } else {
-          usersTbody.innerHTML = users.map(u => `
+          usersTbody.innerHTML = users.length === 0 ? '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No candidates recorded yet.</td></tr>' : users.map(u => `
             <tr>
               <td><strong>#${u.id}</strong></td>
               <td style="font-weight: 600;">${escapeHtml(u.name)}</td>
@@ -938,12 +1078,8 @@
               <td style="font-size: 11px; color: var(--text-muted);">${formatDate(u.created_at)}</td>
             </tr>
           `).join('');
-        }
 
-        if (results.length === 0) {
-          resultsTbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">No completed results yet.</td></tr>';
-        } else {
-          resultsTbody.innerHTML = results.map(r => `
+          resultsTbody.innerHTML = results.length === 0 ? '<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">No results recorded yet.</td></tr>' : results.map(r => `
             <tr>
               <td><strong>#${r.id}</strong></td>
               <td style="font-weight: 600;">${escapeHtml(r.name)}</td>
@@ -959,8 +1095,11 @@
           `).join('');
         }
       }
-    } catch (e) {
-      console.error('Admin records fetch error:', e);
+    } catch (e) {}
+
+    if (!loaded) {
+      usersTbody.innerHTML = `<tr><td>#1</td><td style="font-weight:600;">${escapeHtml(state.user.name || 'Candidate')}</td><td>${state.user.age}</td><td>${escapeHtml(state.user.email || 'active')}</td><td><span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 12px; font-size: 11px;">✓ Local Active</span></td><td>Just now</td></tr>`;
+      resultsTbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 12px;">Complete an assessment to view recorded results.</td></tr>';
     }
   }
 
@@ -982,40 +1121,20 @@
       });
     }
 
-    // Retake with completely new questions from the question server!
     const retestBtn = document.getElementById('btn-retest');
     if (retestBtn) {
       retestBtn.addEventListener('click', async () => {
         window.soundEngine.playClick();
-        if (confirm('Retake assessment? A completely fresh set of questions will be fetched from the question server.')) {
+        if (confirm('Retake assessment? A fresh set of questions will be fetched from the question server.')) {
           retestBtn.textContent = 'Querying Server...';
           retestBtn.disabled = true;
 
           try {
             const onlineQuestions = await fetchAllQuestionsFromServer(12);
-
-            const payload = {
-              name: state.user.name,
-              age: state.user.age,
-              email: state.user.email
-            };
-            if (onlineQuestions && onlineQuestions.length >= 5) {
-              payload.server_questions = onlineQuestions;
-            }
-
-            const res = await fetch('/api/register', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (data.success) {
-              state.user.sessionToken = data.session_token;
-              state.questions = onlineQuestions && onlineQuestions.length >= 5 ? onlineQuestions : (data.questions || []);
-              startTest();
-            }
+            state.questions = (onlineQuestions && onlineQuestions.length >= 5) ? onlineQuestions : getStaticFallbackQuestions(12);
+            startTest();
           } catch (e) {
-            alert('Failed to initialize fresh test: ' + e.message);
+            alert('Failed to refresh test: ' + e.message);
           } finally {
             retestBtn.textContent = '🔄 Retake (New Questions)';
             retestBtn.disabled = false;
