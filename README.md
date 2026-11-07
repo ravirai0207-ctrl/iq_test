@@ -1,6 +1,6 @@
 # 🧠 Luminary NeuroIQ — 3D Standardized Cognitive Engine
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fravirai0207-ctrl%2F3d-iq-test)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fravirai0207-ctrl%2FIq-test)
 
 An advanced, light-themed 3D animated web platform that conducts standardized psychometric IQ assessments with real-time Three.js graphics, 100% live server question feeds, demographic calibration, and persistent cloud/local backend storage.
 
@@ -8,8 +8,8 @@ An advanced, light-themed 3D animated web platform that conducts standardized ps
 
 ## 🌐 Live Deployment & Links
 
-- **GitHub Repository**: [https://github.com/ravirai0207-ctrl/3d-iq-test](https://github.com/ravirai0207-ctrl/3d-iq-test)
-- **1-Click Vercel Deploy**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fravirai0207-ctrl%2F3d-iq-test)
+- **GitHub Repository**: [https://github.com/ravirai0207-ctrl/Iq-test](https://github.com/ravirai0207-ctrl/Iq-test)
+- **1-Click Vercel Deploy**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fravirai0207-ctrl%2FIq-test)
 
 ---
 
