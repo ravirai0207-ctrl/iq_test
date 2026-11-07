@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luminary NeuroIQ • 3D Standardized Cognitive Engine</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+</head>
+<body>
+
+  <!-- 3D Three.js Animated Light-Colored Background -->
+  <div id="canvas-container"></div>
+  <div class="ambient-overlay"></div>
+
+  <!-- Main Application Wrapper -->
+  <div id="app">
+
+    <!-- Floating Futuristic Capsule Navigation Bar -->
+    <header class="navbar-wrap">
+      <nav class="nav-capsule">
+        <div class="brand-capsule" id="brand-home-btn">
+          <div class="brand-gem">✦</div>
+          <div class="brand-meta">
+            <h1>NEURO-CORE</h1>
+            <span>Adaptive 3D Psychometrics</span>
+          </div>
+        </div>
+
+        <div class="nav-actions">
+          <button class="pill-btn" id="open-leaderboard-btn" title="View Top Rankings">
+            🏆 Leaderboard
+          </button>
+          <button class="pill-btn" id="open-admin-btn" title="Inspect SQLite Database">
+            🗄️ Database
+          </button>
+          <button class="pill-btn sound-toggle-btn" id="sound-toggle-btn" title="Toggle Synthesizer Audio">
+            🔊
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content Stages -->
+    <main class="view-stage">
+
+      <!-- ========================================== -->
+      <!-- VIEW 1: DIRECT REGISTRATION (NO OTP!)     -->
+      <!-- ========================================== -->
+      <section class="view-card active" id="view-register">
+        <div class="glass-box">
+          <div class="badge-chip">
+            <span>✨</span> Dynamic Cognitive Assessment v2.0
+          </div>
+          <h2 class="hero-heading">Calibrate Your True Cognitive Quotient</h2>
+          <p class="hero-lead">
+            An advanced, real-time 3D psychometric assessment measuring fluid intelligence, abstract matrix reasoning, and spatial mechanics.
+          </p>
+
+          <form id="form-register">
+            <div class="input-field-group">
+              <label class="input-field-header" for="reg-name">
+                Full Legal Name <span class="hint-tag">Appears on Certificate</span>
+              </label>
+              <div class="input-capsule">
+                <span class="input-symbol">👤</span>
+                <input type="text" id="reg-name" class="clean-input" placeholder="e.g. Dr. Jane Doe" required minlength="2" autocomplete="name">
+              </div>
+            </div>
+
+            <div class="split-row">
+              <div class="input-field-group">
+                <label class="input-field-header" for="reg-age">
+                  Age <span class="hint-tag" id="age-calibration-badge">Norm Baseline</span>
+                </label>
+                <div class="input-capsule">
+                  <span class="input-symbol">🎂</span>
+                  <input type="number" id="reg-age" class="clean-input" placeholder="e.g. 24" required min="8" max="110">
+                </div>
+              </div>
+
+              <div class="input-field-group">
+                <label class="input-field-header" for="reg-email">
+                  Email Address <span class="hint-tag">Direct Instant Start</span>
+                </label>
+                <div class="input-capsule">
+                  <span class="input-symbol">✉️</span>
+                  <input type="email" id="reg-email" class="clean-input" placeholder="e.g. jane@example.com" required autocomplete="email">
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="primary-action-btn" id="btn-start-session">
+              <span>Initialize 3D Assessment</span>
+              <span>→</span>
+            </button>
+          </form>
+
+          <div class="trust-row">
+            <div class="trust-point"><span>🎲</span> Unique Questions Every Test</div>
+            <div class="trust-point"><span>⚡</span> Instant Start (Zero OTP)</div>
+            <div class="trust-point"><span>📜</span> Verifiable Credential</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 2: PROTOCOL BRIEFING                  -->
+      <!-- ========================================== -->
+      <section class="view-card" id="view-instructions">
+        <div class="glass-box">
+          <div class="badge-chip">
+            <span>🛡️</span> Candidate Calibrated: <strong id="candidate-welcome-name">User</strong>
+          </div>
+          <h2 class="hero-heading">Assessment Protocol</h2>
+          <p class="hero-lead">
+            Review testing parameters before engaging the standardized cognitive evaluation timer.
+          </p>
+
+          <ul class="protocol-list">
+            <li class="protocol-card">
+              <div class="protocol-icon-circle">1</div>
+              <div class="protocol-text">
+                <h4>Dynamic Procedural Question Bank</h4>
+                <p>Every test generates a fresh, randomized question set across visual patterns, spatial logic, and numerical series.</p>
+              </div>
+            </li>
+            <li class="protocol-card">
+              <div class="protocol-icon-circle">2</div>
+              <div class="protocol-text">
+                <h4>Age-Adjusted Norms (<span id="brief-user-age">25</span> y/o)</h4>
+                <p>Scoring automatically normalizes against your demographic fluid intelligence baseline (Mean 100, SD 15).</p>
+              </div>
+            </li>
+            <li class="protocol-card">
+              <div class="protocol-icon-circle">3</div>
+              <div class="protocol-text">
+                <h4>Keyboard & Touch Friendly</h4>
+                <p>Use keys [1], [2], [3], [4] or [A], [B], [C], [D] on desktop for rapid response times.</p>
+              </div>
+            </li>
+            <li class="protocol-card">
+              <div class="protocol-icon-circle">4</div>
+              <div class="protocol-text">
+                <h4>Interactive 3D Light Environment</h4>
+                <p>The 3D background light spectrum adapts in real-time as you navigate between cognitive domains.</p>
+              </div>
+            </li>
+          </ul>
+
+          <button class="primary-action-btn" id="btn-launch-test">
+            <span>Begin Cognitive Test</span>
+            <span>🚀</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 3: ACTIVE COGNITIVE ASSESSMENT        -->
+      <!-- ========================================== -->
+      <section class="view-card test-box-wide" id="view-test">
+        <div class="glass-box">
+
+          <!-- HUD Top Row -->
+          <div class="test-top-hud">
+            <div class="hud-left">
+              <span class="q-step-pill" id="test-q-index">Question 1 of 12</span>
+              <span class="category-pill" id="test-q-category">Pattern Recognition</span>
+            </div>
+            <div class="timer-pill">
+              <span>⏱️</span>
+              <span id="test-timer-clock">15:00</span>
+            </div>
+          </div>
+
+          <!-- Progress Track -->
+          <div class="progress-track">
+            <div class="progress-bar-fill" id="test-progress-fill"></div>
+          </div>
+
+          <!-- Question Content -->
+          <div class="q-content-box">
+            <h3 class="q-title" id="test-q-title">Question Title</h3>
+            <p class="q-prompt" id="test-q-prompt">Analyze the question and select the optimal logical response.</p>
+
+            <!-- Responsive Visual Diagram -->
+            <div class="visual-display-card" id="test-visual-container">
+              <!-- Injected SVG Diagram -->
+            </div>
+
+            <!-- 4 Option Cards -->
+            <div class="options-stack" id="test-options-grid">
+              <!-- Dynamically populated options -->
+            </div>
+          </div>
+
+          <!-- Bottom Bar Navigation -->
+          <div class="test-bottom-bar">
+            <button class="secondary-action-btn" id="btn-prev-question">
+              ← Previous
+            </button>
+            <div style="display: flex; gap: 8px;">
+              <button class="secondary-action-btn" id="btn-flag-question" title="Flag for review">
+                🚩 Flag
+              </button>
+              <button class="primary-action-btn" id="btn-next-question" style="width: auto; padding: 10px 22px; margin: 0;">
+                <span>Next Question</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigator Dots Strip -->
+          <div class="nav-dots-strip" id="questions-nav-strip">
+            <!-- 12 pill dots -->
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 4: NEURAL CALCULATION STATE           -->
+      <!-- ========================================== -->
+      <section class="view-card" id="view-calculating">
+        <div class="glass-box calculating-box">
+          <div class="neural-ring-spinner"></div>
+          <h2 class="hero-heading">Synthesizing Psychometric Profile</h2>
+          <p class="hero-lead">Processing multidimensional matrix vectors and response velocities...</p>
+          <div class="calc-status-line" id="calc-status-text">
+            Standardizing age-adjusted Gaussian curve...
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VIEW 5: RESULTS & CERTIFICATE DASHBOARD     -->
+      <!-- ========================================== -->
+      <section class="view-card results-box-wide" id="view-results">
+        <div class="glass-box">
+
+          <div class="results-hero">
+            <!-- Radial Score Gauge -->
+            <div class="radial-iq-gauge">
+              <span class="iq-gauge-caption">Standardized IQ</span>
+              <span class="iq-gauge-number" id="res-iq-score">128</span>
+              <span class="iq-gauge-tier" id="res-iq-badge">Tier 2: Superior</span>
+            </div>
+
+            <!-- Overview -->
+            <div class="results-meta-column">
+              <div class="results-meta-pill" id="res-percentile-badge">
+                <span>🌟</span> Top 3.2% Global Population
+              </div>
+              <h2 class="results-classification-title" id="res-classification-title">Superior Cognitive Ability</h2>
+              <p class="results-desc-text" id="res-description-text">
+                Your performance indicates exceptional fluid reasoning, abstract spatial manipulation, and inductive logic competence.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gaussian Bell Curve -->
+          <div class="bell-curve-wrap">
+            <div class="bell-curve-label">Gaussian Demographic Distribution (Mean = 100, SD = 15)</div>
+            <canvas id="bell-curve-canvas" width="600" height="130"></canvas>
+          </div>
+
+          <!-- Cognitive Dimensions Breakdown -->
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 12px; color: var(--text-primary);">
+            Cognitive Dimension Metrics
+          </h3>
+          <div class="category-metric-grid" id="category-scores-container">
+            <!-- Dynamic Category Breakdown Bars -->
+          </div>
+
+          <!-- Luxury Printable Certificate -->
+          <div class="certificate-frame" id="certificate-print-area">
+            <div class="cert-watermark-text">NEURO-IQ</div>
+            <div class="cert-title-top">Certificate of Cognitive Assessment</div>
+            <div class="cert-subtitle-top">Official Standardized Psychometric Evaluation</div>
+            <div style="font-size: 12.5px; color: var(--text-secondary);">This is to officially certify that</div>
+            <div class="cert-holder-name" id="cert-user-name">Dr. Jane Doe</div>
+            <p style="font-size: 13px; color: var(--text-secondary); max-width: 520px; margin: 0 auto; line-height: 1.5;">
+              has completed the 3D Standardized Psychometric IQ Examination, achieving a verified score of 
+              <strong style="color: var(--accent-indigo); font-size: 15px;" id="cert-iq-score">128 IQ</strong> 
+              (Percentile: <strong id="cert-percentile">96.8%</strong>).
+            </p>
+            <div class="cert-footer-row">
+              <div>Email: <strong id="cert-user-email">jane@example.com</strong></div>
+              <div>Age Baseline: <strong id="cert-user-age">Age 24</strong></div>
+              <div>Issue Date: <strong id="cert-date">Nov 7, 2026</strong></div>
+              <div>Credential ID: <span class="cert-id-code" id="cert-id">CERT-IQ-8F42-A91B</span></div>
+            </div>
+          </div>
+
+          <!-- Result Actions -->
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <button class="primary-action-btn" id="btn-print-cert" style="width: auto; padding: 11px 24px; margin: 0;">
+              <span>🖨️ Print / Save Certificate</span>
+            </button>
+            <button class="secondary-action-btn" id="btn-view-leaderboard-res">
+              <span>🏆 Global Leaderboard</span>
+            </button>
+            <button class="secondary-action-btn" id="btn-retest">
+              <span>🔄 Retake (New Questions)</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: GLOBAL LEADERBOARD                  -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="modal-leaderboard">
+    <div class="modal-window">
+      <div class="modal-header-bar">
+        <h3>🏆 Global Cognitive Leaderboard</h3>
+        <button class="modal-close-trigger" data-close="modal-leaderboard">&times;</button>
+      </div>
+      <div class="modal-scroll-area">
+        <table class="records-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Candidate</th>
+              <th>Age</th>
+              <th>IQ Score</th>
+              <th>Percentile</th>
+              <th>Classification</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-tbody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">Loading rankings...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: SQLITE DATABASE INSPECTOR           -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="modal-admin">
+    <div class="modal-window" style="max-width: 900px;">
+      <div class="modal-header-bar">
+        <h3>🗄️ Backend SQLite Database Records</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="pill-btn" id="refresh-admin-btn" style="padding: 4px 10px; font-size: 11.5px;">🔄 Refresh</button>
+          <button class="modal-close-trigger" data-close="modal-admin">&times;</button>
+        </div>
+      </div>
+      <div class="modal-scroll-area">
+        <h4 style="font-size: 13.5px; font-weight: 800; margin-bottom: 8px; color: var(--accent-indigo);">
+          1. Registered Candidates Table (`users`)
+        </h4>
+        <div style="overflow-x: auto; margin-bottom: 22px;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Candidate Name</th>
+                <th>Age</th>
+                <th>Email Address</th>
+                <th>Verified</th>
+                <th>Registered At</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Fetching users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="font-size: 13.5px; font-weight: 800; margin-bottom: 8px; color: var(--accent-indigo);">
+          2. Cognitive Test Results Table (`test_results`)
+        </h4>
+        <div style="overflow-x: auto;">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Candidate Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>IQ</th>
+                <th>Percentile</th>
+                <th>Classification</th>
+                <th>Credential ID</th>
+                <th>Time</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="admin-results-tbody">
+              <tr><td colspan="10" style="text-align: center; color: var(--text-muted);">Fetching results...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js and Application Scripts -->
+  <script src="js/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+    }
+  </script>
+  <script src="js/sound.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# CognitiveIQ Vercel Requirements
+# Uses Python 3 Standard Library (http.server, sqlite3, json, math)
+

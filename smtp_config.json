@@ -1,0 +1,10 @@
+{
+  "_comment": "To send real verification emails to any mailbox, set 'enabled': true and provide your SMTP details (e.g. Gmail App Password). When enabled: false, the system automatically runs in dev mode displaying the OTP code instantly on screen.",
+  "enabled": false,
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_user": "your-email@gmail.com",
+  "smtp_pass": "your-app-password",
+  "from_email": "noreply-iqtest@cognitivelabs.ai",
+  "from_name": "CognitiveIQ Assessment Labs"
+}
